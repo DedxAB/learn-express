@@ -1,40 +1,19 @@
-const {readFileSync} = require('fs');
-const http = require('http');
+const express = require("express");
+const app = express();
+const path = require('path');
 
-const homePage = readFileSync('./navbar-app/index.html')
-const style = readFileSync('./navbar-app/styles.css')
-const browserApp = readFileSync('./navbar-app/browser-app.js')
+app.use(express.static('./public'))
+app.get("/", (req, res) => {
+  res.sendFile(path.resolve(__dirname, './navbar-app/index.html'))
+  console.log(path.resolve(__dirname, './navbar-app/index.html'))
+});
 
-const server = http.createServer((req, res) => {
-    if (req.url === '/') {
-        console.log(req.url)
-        res.writeHead(200, {'content-type': 'text/html'})
-        res.write(homePage)
-        res.end()
-    }
-    else if (req.url === '/about') {
-        console.log(req.url)
-        res.writeHead(200, {'content-type': 'text/html'})
-        res.write('About Page')
-        res.end()
-    }
-    else if (req.url === '/styles.css') {
-        console.log(req.url)
-        res.writeHead(200, {'content-type': 'text/css'})
-        res.write(style)
-        res.end()
-    }
-    else if (req.url === '/browser-app.js') {
-        console.log(req.url)
-        res.writeHead(200, {'content-type': 'text/css'})
-        res.write(browserApp)
-        res.end()
-    }
-    else {
-        console.log(req.url)
-        res.writeHead(404, {'content-type': 'text/html'})
-        res.write('Page not found')
-        res.end()
-    }
-})
-server.listen(3000, ()=>console.log('Server starting on 3000 port'))
+app.get("/about", (req, res) => {
+  res.send("About page");
+});
+
+app.all("*", (req, res) => {
+  res.status(404).send("Page not found");
+});
+
+app.listen(3000, () => console.log("Server is listening on 3000 port"));
