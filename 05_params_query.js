@@ -14,7 +14,7 @@ app.get("/api/products", (req, res) => {
 });
 app.get("/api/products/:id", (req, res) => {
   const { id } = req.params;
-  // console.log(req.params)
+  console.log(req.params);
   // console.log(req.url)
   const singleProduct = products.filter((product) => product.id === Number(id));
   console.log(singleProduct);
@@ -23,6 +23,23 @@ app.get("/api/products/:id", (req, res) => {
   } else {
     res.json(singleProduct);
   }
+});
+app.get("/api/v1/query", (req, res) => {
+  console.log(req.query);
+  let sortedList = [...products];
+  const { search, limit } = req.query;
+  if (search) {
+    sortedList = sortedList.filter((prod) => prod.name.startsWith(search));
+  }
+  if (limit) {
+    sortedList = sortedList.slice(0, Number(limit));
+  }
+  console.log(sortedList);
+  if (sortedList.length < 1) {
+    res.status(404).send("Search item not found");
+    return;
+  }
+  res.json(sortedList);
 });
 app.listen(3000, () => {
   console.log("Server is listening on port 3000");
